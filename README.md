@@ -1,62 +1,114 @@
-# 📈 Streamlit Option App – Analisi Opzioni Cripto con Monte Carlo & t-Student
 
-Una web app interattiva per analizzare la convenienza economica delle opzioni call/put su asset cripto (es. SOL/USDT) utilizzando simulazioni Monte Carlo basate su distribuzioni **t-Student**, a confronto con il classico modello di **Black-Scholes**.
+# 📈 Streamlit Option App – Crypto Option Pricing with Monte Carlo & t-Student
 
----
+An interactive web app to analyze the expected payoff and fair value of European **call/put options** on crypto assets (e.g., SOL/USDT).  
+This tool compares **Monte Carlo simulations** using **Student's t-distribution** against the classical **Black-Scholes model**, incorporating statistical insights from financial research.
 
-## 🚀 Funzionalità principali
-
-- 📊 Download dati storici del sottostante (es. SOLUSDT) da Binance
-- 📈 Calcolo log-return, statistica descrittiva, test di normalità
-- 📉 Fit distribuzione empirica con:
-  - ✅ Normale standard
-  - ✅ t-Student (gradi di libertà stimati)
-- 🧠 Pricing opzioni call/put con:
-  - 🎲 Monte Carlo (t-student)
-  - 📘 Black-Scholes
-- 📌 Probabilità di profitto a scadenza (ITM)
-- 📈 Visualizzazioni:
-  - Nuvola di percorsi simulati
-  - Distribuzione dei prezzi a scadenza (orientata orizzontalmente)
-  - Confronto payoff netti attesi
-- 📥 Esportazione risultati e prezzi storici in CSV
-- 🧪 Pronto per estensione con strategie multi-opzione (es. straddle, vertical spread)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://cryptooptionpricing-ape8b4ed5j6co9f22nqc5g.streamlit.app/)
 
 ---
 
-## 🧩 Struttura del progetto
+## 🚀 Key Features
+
+- 📊 Download historical prices for crypto assets (e.g., SOL-USD from Yahoo Finance)
+- 📈 Log-return computation, descriptive statistics, and **normality tests**
+- 📉 Empirical return distribution fitting:
+  - ✅ Standard Normal
+  - ✅ Student’s t-distribution (with fitted degrees of freedom)
+- 🧠 European option pricing using:
+  - 🎲 **Monte Carlo simulation** with t-distribution
+  - 📘 **Black-Scholes** formula with annualized volatility
+- 📌 **ITM probability estimation** at expiry
+- 📈 Visualization:
+  - Simulated price paths
+  - Terminal price distribution (rotated layout)
+  - QQ plots (vs. normal and t-distribution)
+- 📥 Export results and historical data as CSV
+- 🧪 Modular structure: ready for multi-leg strategies (straddle, spreads, etc.)
+
+---
+
+## 🧠 Scientific Background
+
+The app is motivated by recent research showing that **crypto return distributions** deviate significantly from normality, exhibiting **fat tails** better modeled by the **Student's t-distribution**. Relevant literature:
+
+- Cassidy et al. (2010), *Pricing European Options with Log Student's t-distribution*  
+  [arXiv:0906.4092](https://arxiv.org/abs/0906.4092)
+
+- Zulfiqar & Gulzar (2021), *Bitcoin implied volatility smile analysis*  
+  [SpringerOpen](https://jfin-swufe.springeropen.com/articles/10.1186/s40854-021-00280-y)
+
+- Venter et al. (2021), *Bitcoin options with GARCH models*  
+  [MDPI Journal of Risk and Financial Management](https://www.mdpi.com/1911-8074/14/6/261)
+
+- Molin (2022), *Master thesis on crypto option pricing*  
+  [Lund University](https://lup.lub.lu.se/student-papers/search/publication/9091224)
+
+> See the [academic references wiki](https://github.com/gabrieledemarco/Crypto_Option_pricing/wiki/Academic-References) for more.
+
+---
+
+## 🧩 Project Structure
 
 ```
-option_analysis_package/
-├── app.py                          # App principale Streamlit
+Crypto_Option_pricing/
+├── app.py                          # Main Streamlit app
+├── main.py                         # Optional CLI/test script
+├── requirements.txt
 ├── option_analysis/
 │   ├── __init__.py
-│   ├── price_data_downloader.py   # Scarica dati da Binance
-│   ├── return_analyzer.py         # Calcola log-return e stima t-student
-│   ├── option_pricer.py           # Monte Carlo e Black-Scholes
-│   └── strike_sensitivity.py      # Analisi su strike multipli
-├── main.py                        # Script test/debug
+│   ├── price_data_downloader.py   # Download historical prices (via Yahoo)
+│   ├── return_analyzer.py         # Compute returns and fit t-distribution
+│   ├── option_pricer.py           # Monte Carlo & Black-Scholes models
+│   └── strike_sensitivity.py      # Multi-strike pricing sensitivity
 ```
 
 ---
 
-## ▶️ Come eseguirlo
+## ▶️ How to Run
 
-1. Installa i requisiti:
+### 🌐 Run Online (Recommended)
+
+No setup required — just click below to launch the app in the cloud:
+
+👉 [Open App on Streamlit Cloud](https://cryptooptionpricing-ape8b4ed5j6co9f22nqc5g.streamlit.app/)
+
+---
+
+### 💻 Run Locally
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/gabrieledemarco/Crypto_Option_pricing.git
+cd Crypto_Option_pricing
+```
+
+2. (Optional) Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate      # On macOS/Linux
+.venv\Scripts\activate         # On Windows
+```
+
+3. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Avvia l'app Streamlit:
+4. Launch the Streamlit app:
 
 ```bash
 streamlit run app.py
 ```
 
+The app will open at `http://localhost:8501`.
+
 ---
 
-## 📦 Requisiti
+## 📦 Requirements
 
 - `streamlit`
 - `numpy`
@@ -65,26 +117,42 @@ streamlit run app.py
 - `matplotlib`
 - `seaborn`
 - `requests`
+- `yfinance`
 
 ---
 
-## 📌 Esempi supportati
+## ✅ Supported Use Cases
 
-- ✅ SOLUSDT (Binance)
-- ✅ Strike price personalizzabile
-- ✅ Scadenza selezionabile
-- ✅ Tasso risk-free configurabile
-- (espandibile facilmente a ETH, BTC, ecc.)
-
----
-
-## 📬 Contatti e contributi
-
-Progetto didattico / sperimentale.  
-Per suggerimenti o richieste, contattami direttamente.
+- Any asset available on Yahoo Finance (e.g., `SOL-USD`, `BTC-USD`, `ETH-USD`)
+- User-customizable parameters:
+  - ✅ Strike price
+  - ✅ Expiry date
+  - ✅ Risk-free rate
 
 ---
 
-## 🧠 Licenza
+## 💡 Educational Use Case
 
-MIT – libero utilizzo per fini di analisi, studio e personalizzazione.
+This project is useful for:
+
+- Finance and quantitative students
+- Crypto and options traders
+- Researchers interested in simulation-based pricing models
+
+---
+
+## 📬 Contact & Contribution
+
+**This is an open educational project.**  
+Feel free to fork, suggest improvements, or open issues!
+
+- 📧 Email: [gabridemarco091@gmail.com](mailto:gabridemarco091@gmail.com)  
+- 💼 LinkedIn: [Gabriele De Marco](https://www.linkedin.com/in/gabriele-de-marco-17a02ba7/)  
+- ☕ Support: [Buy Me a Coffee](https://www.buymeacoffee.com/Gabridemarco95)
+
+---
+
+## 🧠 License
+
+This project is released under the **MIT License**.  
+Use it freely for study, customization, and experimentation.

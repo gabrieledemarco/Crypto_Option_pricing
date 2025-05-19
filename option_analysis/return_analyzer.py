@@ -87,7 +87,7 @@ class ReturnAnalyzer:
         ax.plot(theoretical, data, "o", alpha=0.5)
         ax.plot(theoretical, theoretical, "r--", label="45°")
         ax.set_title(title)
-        ax.set_xlabel("Quantili teorici")
-        ax.set_ylabel("Quantili empirici")
+        ax.set_xlabel("Theoric Quantiles")
+        ax.set_ylabel("Empiric Quantiles")
         ax.grid(True)
         return ax
