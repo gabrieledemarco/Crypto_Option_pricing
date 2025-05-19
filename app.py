@@ -1,4 +1,3 @@
-
 """
 Streamlit app for analyzing options on cryptocurrencies.
 It estimates the fair value of Call and Put options via Monte Carlo simulations (with t-Student distribution)
@@ -19,8 +18,8 @@ from option_analysis.return_analyzer import ReturnAnalyzer
 from option_analysis.option_pricer import OptionPricer
 
 st.set_page_config(page_title="Crypto Option Analysis", layout="wide")
-st.title("📈 Monte Carlo Option Analysis on Crypto")
-st.subheader("t-Student vs Normal Distribution")
+st.title("📈 Crypto Option Pricing")
+st.subheader("Using t-Student vs Normal Distribution")
 
 st.markdown("""
 This app performs a **quantitative options analysis** on crypto assets (e.g., SOL-USD) including:
@@ -129,21 +128,72 @@ if run_analysis:
         bs_call = pricer.black_scholes_price(stats['vol_annualized'], 'call')
         bs_put = pricer.black_scholes_price(stats['vol_annualized'], 'put')
 
+        bs_call_prob_itm = pricer.probability_itm_bs(stats['vol_annualized'], 'call')
+        bs_put_prob_itm = pricer.probability_itm_bs(stats['vol_annualized'], 'put')
+
         col11, col12 = st.columns(2)
         with col11:
             st.metric("Monte Carlo CALL (t-Student)", f"{call_price:.4f} USDT")
             st.write(f"📈 CALL ITM probability: `{call_prob:.2%}`")
             st.metric("Black-Scholes CALL", f"{bs_call:.4f} USDT")
+            st.write(f"🧠 Probabilità CALL ITM (BS): `{bs_call_prob_itm:.2%}`")
 
         with col12:
             st.metric("Monte Carlo PUT (t-Student)", f"{put_price:.4f} USDT")
             st.write(f"📉 PUT ITM probability: `{put_prob:.2%}`")
             st.metric("Black-Scholes PUT", f"{bs_put:.4f} USDT")
+            st.write(f"🧠 Probabilità PUT ITM (BS): `{bs_put_prob_itm:.2%}`")
 
         st.markdown("**💡 How to interpret the results:**")
         st.markdown("- Monte Carlo uses the empirical distribution of returns (t-Student).")
         st.markdown("- Black-Scholes assumes lognormal returns with constant volatility.")
         st.markdown("- Probabilities indicate the chance of the option being **in the money (ITM)** at expiry.")
+
+        st.markdown("---")
+
+        # === Option Greeks Section ===
+        st.subheader("📉 Option Greeks")
+
+        col_greek_bs, col_greek_mc = st.columns(2)
+        print(type(stats['vol_annualized']))
+        with col_greek_bs:
+            st.markdown("**Greeks – Black-Scholes**")
+            bs_call_greeks = pricer.compute_greeks_bs(option_type='call',
+                                                      sigma_annual=(stats['vol_annualized']))
+            bs_put_greeks = pricer.compute_greeks_bs(option_type='put',
+                                                     sigma_annual=float(stats['vol_annualized']))
+            st.dataframe(pd.DataFrame({
+                "Greek": list(bs_call_greeks.keys()),
+                "Call": list(bs_call_greeks.values()),
+                "Put": list(bs_put_greeks.values())
+            }))
+
+        with col_greek_mc:
+            st.markdown("**Greeks – Monte Carlo (t-Student)**")
+            mc_call_greeks = pricer.compute_greeks_mc('call')
+            mc_put_greeks = pricer.compute_greeks_mc('put')
+            st.dataframe(pd.DataFrame({
+                "Greek": list(mc_call_greeks.keys()),
+                "Call": list(mc_call_greeks.values()),
+                "Put": list(mc_put_greeks.values())
+            }))
+
+        # Quick reference
+        st.markdown("### 📘 Option Greeks – Quick Reference")
+        st.markdown("""
+        - **Delta (Δ)**: Measures how much the option's price changes for a $1 move in the underlying asset.  
+          Call deltas range from 0 to 1, put deltas from -1 to 0.
+
+        - **Gamma (Γ)**: Describes how fast Delta changes when the underlying price changes.  
+          High gamma = more sensitivity, especially at-the-money.
+
+        - **Theta (Θ)**: Quantifies time decay — how much value the option loses each day.  
+          It is typically negative for long options.
+
+        - **Vega (ν)**: Indicates how much the option's value changes with a 1% change in implied volatility.
+
+        - **Rho (ρ)**: Measures how the option's price changes with a 1% shift in the risk-free interest rate.
+        """)
 
         st.markdown("---")
         st.subheader("📊 Monte Carlo Simulation Analysis")
@@ -154,10 +204,11 @@ if run_analysis:
         log_paths = log_returns_shifted + np.log(spot)
         price_paths = np.exp(log_paths)
 
-        fig_cloud, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5), gridspec_kw={'width_ratios': [3, 1]}, constrained_layout=True)
+        fig_cloud, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5), gridspec_kw={'width_ratios': [3, 1]},
+                                             constrained_layout=True)
         for path in price_paths[:200]:
             ax1.plot(range(T_days + 1), path, alpha=0.1, color='steelblue')
-        ax1.set_title("Simulated Price Paths")
+        ax1.set_title("Simulated Price Paths (t-Student)")
         ax1.set_xlabel("Days")
         ax1.set_ylabel("Price")
         ax1.grid(True)
@@ -174,12 +225,20 @@ if run_analysis:
         ax2.set_ylim(spot * 0.3, spot * 2)
 
         st.pyplot(fig_cloud)
+
+        # Dopo i calcoli principali
+        gbm_paths = pricer.simulate_gbm_paths(sigma_annual=stats['vol_annualized'], n_sim=1000)
+        fig_gbm = pricer.plot_gbm_paths_and_distribution(gbm_paths)
+        st.pyplot(fig_gbm)
+
+
         st.markdown("---")
         st.subheader("📥 Export Data")
         df_download = pd.DataFrame({"timestamp": df.index, "close": df["close"].squeeze()})
         col111, col112 = st.columns(2)
         with col111:
-            st.download_button("📁 Download historical prices", data=df_download.to_csv(index=False), file_name="historical_prices.csv")
+            st.download_button("📁 Download historical prices", data=df_download.to_csv(index=False),
+                               file_name="historical_prices.csv")
 
             result_df = pd.DataFrame({
                 "Method": ["Monte Carlo", "Black-Scholes"],
@@ -189,7 +248,8 @@ if run_analysis:
                 "Put Prob Profit": [put_prob, None]
             })
         with col112:
-            st.download_button("📁 Download option results", data=result_df.to_csv(index=False), file_name="option_results.csv")
+            st.download_button("📁 Download option results", data=result_df.to_csv(index=False),
+                               file_name="option_results.csv")
 
         st.success("Analysis completed ✅")
 
