@@ -4,7 +4,7 @@
 An interactive web app to analyze the expected payoff and fair value of European **call/put options** on crypto assets (e.g., SOL/USDT).  
 This tool compares **Monte Carlo simulations** using **Student's t-distribution** against the classical **Black-Scholes model**, incorporating statistical insights from financial research.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://cryptooptionpricing-ape8b4ed5j6co9f22nqc5g.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://cryptooptionpricing.streamlit.app/)
 
 ---
 
@@ -71,7 +71,7 @@ Crypto_Option_pricing/
 
 No setup required — just click below to launch the app in the cloud:
 
-👉 [Open App on Streamlit Cloud](https://cryptooptionpricing-ape8b4ed5j6co9f22nqc5g.streamlit.app/)
+👉 [Open App on Streamlit Cloud](https://cryptooptionpricing.streamlit.app/)
 
 ---
 
@@ -89,7 +89,7 @@ cd Crypto_Option_pricing
 ```bash
 python -m venv .venv
 source .venv/bin/activate      # On macOS/Linux
-.venv\Scripts\activate         # On Windows
+.venv\Scripts ctivate         # On Windows
 ```
 
 3. Install dependencies:
@@ -104,7 +104,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-The app will open at `http://localhost:8501`.
+The app will open at `https://cryptooptionpricing.streamlit.app/`.
 
 ---
 
