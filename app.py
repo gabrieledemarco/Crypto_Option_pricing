@@ -134,14 +134,14 @@ if run_analysis:
         col11, col12 = st.columns(2)
         with col11:
             st.metric("Monte Carlo CALL (t-Student)", f"{call_price:.4f} USDT")
-            st.write(f"📈 CALL ITM probability: `{call_prob:.2%}`")
-            st.metric("Black-Scholes CALL", f"{bs_call:.4f} USDT")
+            st.write(f"📈 CALL ITM probability (t-Student): `{call_prob:.2%}`")
+            st.metric("Black-Scholes CALL (BS)", f"{bs_call:.4f} USDT")
             st.write(f"🧠 Probabilità CALL ITM (BS): `{bs_call_prob_itm:.2%}`")
 
         with col12:
             st.metric("Monte Carlo PUT (t-Student)", f"{put_price:.4f} USDT")
-            st.write(f"📉 PUT ITM probability: `{put_prob:.2%}`")
-            st.metric("Black-Scholes PUT", f"{bs_put:.4f} USDT")
+            st.write(f"📉 PUT ITM probability (t-Student): `{put_prob:.2%}`")
+            st.metric("Black-Scholes PUT (BS)", f"{bs_put:.4f} USDT")
             st.write(f"🧠 Probabilità PUT ITM (BS): `{bs_put_prob_itm:.2%}`")
 
         st.markdown("**💡 How to interpret the results:**")
