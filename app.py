@@ -119,6 +119,8 @@ if run_analysis:
                 analyzer.qq_plot_manual(dist='norm', ax=ax_qq2, title="QQ Plot vs Normale")
                 st.pyplot(fig_qq2)
 
+        st.sidebar.markdown("---")
+
         st.subheader("2️⃣ Option Valuation: Call & Put")
         pricer = OptionPricer(spot, strike, r, T_days, scale, df_t)
         call_price, call_prob, final_prices = pricer.monte_carlo_price('call')
@@ -143,6 +145,7 @@ if run_analysis:
         st.markdown("- Black-Scholes assumes lognormal returns with constant volatility.")
         st.markdown("- Probabilities indicate the chance of the option being **in the money (ITM)** at expiry.")
 
+        st.sidebar.markdown("---")
         st.subheader("📊 Monte Carlo Simulation Analysis")
         np.random.seed(42)
         returns_matrix = np.random.standard_t(df_t, size=(1000, T_days)) * scale
@@ -171,7 +174,7 @@ if run_analysis:
         ax2.set_ylim(spot * 0.3, spot * 2)
 
         st.pyplot(fig_cloud)
-
+        st.sidebar.markdown("---")
         st.subheader("📥 Export Data")
         df_download = pd.DataFrame({"timestamp": df.index, "close": df["close"].squeeze()})
         col111, col112 = st.columns(2)
