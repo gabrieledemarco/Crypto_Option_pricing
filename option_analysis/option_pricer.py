@@ -7,9 +7,12 @@ from scipy.stats import norm
 
 
 class OptionPricer:
-    def __init__(self, spot, strike, r, T_days, sigma_daily, df_t, n_sim=100_000):
-        self.S0 = spot
-        self.K = strike
+    """Classe per la valutazione di opzioni call e put."""
+
+    def __init__(self, spot_price, strike_price, r, days_to_expiry, sigma_daily, df_t, n_sim=100_000):
+        """Inizializza i parametri per la simulazione."""
+        self.spot_price = spot_price
+        self.strike_price = strike_price
         self.r = r
         self.days_to_expiry = days_to_expiry
         self.expiry_in_years = days_to_expiry / 365
