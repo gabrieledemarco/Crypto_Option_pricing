@@ -39,7 +39,7 @@ expiry = st.sidebar.date_input("Expiration date", value=datetime.date.today() + 
 today = datetime.date.today()
 T_days = (expiry - today).days
 spot = 100
-strike = st.sidebar.number_input("Strike Price", value=round(spot))
+strike = st.sidebar.number_input("Strike Price", value=float(spot), step=0.01)
 run_analysis = st.sidebar.button("▶️ RUN Analysis")
 st.sidebar.markdown("---")
 
